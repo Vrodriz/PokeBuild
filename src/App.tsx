@@ -1,33 +1,40 @@
-import { useEffect, useState } from "react";
-import PokemonCard from "./components/PokemonCard/PokemonCard";
-import { fetchPokemon } from "./services/pokemonAPI";
+import React, { useEffect, useState } from "react";
+import { fetchPokemon } from "./services/pokemonAPI";  // Certifique-se de que o caminho está correto
+import { PokemonDTO } from "./api/DTOs/PokemonDTO";
+import { TeamContainer, PokemonCard, PokemonImage, PokemonName, PokemonTypes } from "./components/PokemonGrid/PokemonTeam";
 
-interface Pokemon { 
-  name: string,
-  image: string;
-  types: string[];
-}
-
-function App() {
-  const [pokemon, setPokemon] = useState<Pokemon | null>(null);
+const SelectedTeam: React.FC = () => {
+  const [selectedPokemons, setSelectedPokemons] = useState<PokemonDTO[]>([]);
 
   useEffect(() => {
-    const loadPokemon = async () => {
-      const data = await fetchPokemon(150); 
-      setPokemon(data);
+    // Função para buscar Pokémons
+    const fetchPokemons = async () => {
+      const pokemons = [];
+      for (let i = 1; i <= 60; i++) {
+        const pokemon = await fetchPokemon(i); 
+        if (pokemon) pokemons.push(pokemon);
+      }
+      setSelectedPokemons(pokemons);  // Atualiza o estado com os Pokémons encontrados
     };
-    loadPokemon();
+
+    fetchPokemons();  // Chama a função assim que o componente é montado
   }, []);
 
-  return (  
-    <div>  
-      <h1>Pokemon API test</h1>
-      {pokemon ? (  
-        <PokemonCard name={pokemon.name} image={pokemon.image} types={pokemon.types}/>
-      ) : ( 
-        <p>Carregando...</p>
-      )}
-    </div>
-  )}
+  return (
+    <TeamContainer>
+      {selectedPokemons.map((pokemon) => (
+        <PokemonCard key={pokemon.name}>
+          <PokemonImage src={pokemon.image} alt={pokemon.name} />
+          <PokemonName>{pokemon.name}</PokemonName>
+          <PokemonTypes>
+            {pokemon.types.map((type) => (
+              <span key={type}>{type}</span>
+            ))}
+          </PokemonTypes>
+        </PokemonCard>
+      ))}
+    </TeamContainer>
+  );
+};
 
-  export default App;
+export default SelectedTeam;
