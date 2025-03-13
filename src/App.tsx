@@ -1,5 +1,5 @@
 import React from "react";
-import SelectedTeam from "./components/PokemonGrid/PokemonTeam"; // Importa o componente que criamos
+import SelectedTeam from "./components/PokemonGrid/PokemonTeam"; 
 
 const App: React.FC = () => {
   return (
